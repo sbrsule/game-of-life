@@ -1,5 +1,6 @@
 # Game of Life
 An implementation of Conway's Game of Life written in Rust using the Bevy framework
+![example](/assets/screenshot.png)
 ## How to Install
 1. First install Rustup through your preferred software repository 
    - If you are using MacOS, Linux, or another Unix-like OS, you can also run the following commands below
