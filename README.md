@@ -11,7 +11,7 @@ An implementation of Conway's Game of Life written in Rust using the Bevy framew
 ```
 git clone https://github.com/sbrsule/game-of-life
 ````
-3. Move into the downloaded repo
+3. Move into the new folder of the downloaded repo
 ```
 cd game-of-life
 ```
@@ -22,6 +22,6 @@ cd game-of-life
   ```
   
 ## Controls
-Click on cells to make them alive or dead
-Press 'P' to pause and unpause the game
-Press the 'Clear' button to clear all cells
+Click on cells to make them alive or dead.
+Press 'P' to pause and unpause the game.
+Press the 'Clear' button to clear all cells.
