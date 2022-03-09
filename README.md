@@ -23,5 +23,7 @@ cd game-of-life
   
 ## Controls
 Click on cells to make them alive or dead.
+
 Press 'P' to pause and unpause the game.
+
 Press the 'Clear' button to clear all cells.
