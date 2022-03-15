@@ -8,7 +8,17 @@ An implementation of Conway's Game of Life written in Rust using the Bevy framew
  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
  ```
  
-2. Run the following command within the directory
+2. Clone the repository
+  ```
+  git clone https://github.com/sbrsule/game-of-life
+  ```
+3. Move into the downloaded repository and run the following command within the directory
   ```
   cargo run --release
   ```
+
+## To-Do List
+[x] Create clear button
+[x] Create main menu
+[ ] Make pause menu
+[ ] Add map wrapping
