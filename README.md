@@ -18,7 +18,7 @@ An implementation of Conway's Game of Life written in Rust using the Bevy framew
   ```
 
 ## To-Do List
-[x] Create clear button
-[x] Create main menu
-[ ] Make pause menu
-[ ] Add map wrapping
+- [x] Create clear button
+- [x] Create main menu
+- [ ] Make pause menu
+- [ ] Add map wrapping
