@@ -1,4 +1,5 @@
 mod game;
+mod main_menu;
 mod mouse;
 mod button;
 mod texture_helper;
@@ -14,6 +15,12 @@ const WINDOW_COLOR: Color = Color::rgb(0.0, 0.0, 0.0);
 
 #[derive(Component)]
 struct MainCamera;
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum AppState {
+    MainMenu,
+    InGame,
+    Paused,
+}
 
 fn main() {
     App::new()
@@ -28,10 +35,11 @@ fn main() {
         .add_plugin(TilemapPlugin)
         .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
+        .add_plugin(main_menu::MainMenuPlugin)
         .add_plugin(game::GamePlugin)
         .add_plugin(mouse::MousePlugin)
         .add_plugin(button::ButtonPlugin)
         .add_system(set_texture_filters_to_nearest)
-        .add_system(bevy::input::system::exit_on_esc_system)
+        .add_state(AppState::MainMenu)
         .run();
 }

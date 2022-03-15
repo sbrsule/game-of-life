@@ -1,6 +1,8 @@
 use bevy::{prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 
+use crate::AppState;
+
 const TIME_STEP: f64 = 0.5;
 
 pub const MAP_SIZE: (u32, u32) = (4, 4);
@@ -12,23 +14,25 @@ pub const TRUE_MAP_SIZE: (u32, u32) = (MAP_SIZE.0 * CHUNK_SIZE.0 * TILE_SIZE.0 a
 pub const GRID_ID: u16 = 0;
 pub const CELL_ID: u16 = 1;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-enum AppState {
-    InGame,
-    Paused,
-}
+
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_startup_system(startup)
-            .add_state(AppState::Paused)
-            .add_system(pause_game)
+            .add_system_set(
+                SystemSet::on_enter(AppState::InGame) 
+                    .with_system(startup)
+            )
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(update_cells)
+                    .with_system(pause_game)
+            )
+            .add_system_set(
+                SystemSet::on_update(AppState::Paused)
+                    .with_system(pause_game)
             );
     }
 }
@@ -40,8 +44,10 @@ fn startup(
     asset_server: Res<AssetServer>, 
     mut commands: Commands,
     mut map_query: MapQuery,
+    mut app_state: ResMut<State<AppState>>,
 ) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    app_state.push(AppState::Paused).unwrap();
 
     let texture_handle: Handle<Image> = asset_server.load("tiles.png");
     let layer_settings = LayerSettings::new(
@@ -96,8 +102,7 @@ fn startup(
 
 fn update_cells(
     mut commands: Commands,
-    tile_query: Query<(Entity, &Tile, &TilePos)>,
-    mut map_query: MapQuery,
+    tile_query: Query<(Entity, &Tile, &TilePos)>, mut map_query: MapQuery,
     time: Res<Time>,
     mut last_update_query: Query<&mut LastUpdate>,
 ) {
@@ -119,6 +124,7 @@ fn update_cells(
                     }
                 })
                 .count();
+             
             let was_alive = tile.visible;
             let is_alive = match (was_alive, neighbor_count) {
                 (true, x) if x < 2 => false,
@@ -145,6 +151,7 @@ fn update_cells(
 
         last_update.0 = current_time;
     }
+
 }
 
 fn pause_game(
@@ -154,13 +161,14 @@ fn pause_game(
     if keys.just_pressed(KeyCode::P) {
         match app_state.current() {
             AppState::InGame => {
-                app_state.set(AppState::Paused).unwrap();
+                app_state.push(AppState::Paused).unwrap();
                 println!("PAUSED")
             }
             AppState::Paused => {
-                app_state.set(AppState::InGame).unwrap();
+                app_state.pop().unwrap();
                 println!("RESUMED")
             }
+            _ => ()
         }
         keys.reset(KeyCode::P);
     }

@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{MapQuery, Tile, TilePos};
 
-const CLICKED_BUTTON: Color = Color::rgb(0.9, 0.9, 0.9);
+use crate::AppState;
+
+const CLICKED_BUTTON: Color = Color::rgb(1.0, 1.0, 1.0);
 const HOVERED_BUTTON: Color = Color::rgb(0.7, 0.7, 0.7);
 const NORMAL_BUTTON: Color = Color::rgb(0.5, 0.5, 0.5);
 
@@ -11,8 +13,14 @@ pub struct ButtonPlugin;
 impl Plugin for ButtonPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_startup_system(spawn_buttons)
-            .add_system(button_system);
+            .add_system_set(
+                SystemSet::on_enter(AppState::InGame)
+                    .with_system(spawn_buttons)
+            )
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame)
+                    .with_system(button_system)
+            );
     } 
 }
 
