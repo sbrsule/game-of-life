@@ -21,7 +21,7 @@ fn cursor_system(
 
     // If the cursor is pressed in the window, the specific tile is accessed
     if let Some(_) = window.cursor_position() {
-        if buttons.just_pressed(MouseButton::Left) {
+        if buttons.pressed(MouseButton::Left) {
             let cursor_pos = window.cursor_position().unwrap();
             let tile_pos = get_tile(cursor_pos, window); 
             println!("({:?}", tile_pos);
@@ -33,7 +33,28 @@ fn cursor_system(
                     Ok(tile_entity) => {
                         let mut tile = tile_query.get_mut(tile_entity).unwrap();
                         println!("valid tile");
-                        tile.visible = !tile.visible;
+                        tile.visible = true;
+    
+                        // Update tile 
+                        map_query.notify_chunk_for_tile(tile_pos, 0u16, crate::game::CELL_ID);
+                    }
+                    Err(_) => ()
+                };
+            }
+        }
+        else if buttons.pressed(MouseButton::Right) {
+            let cursor_pos = window.cursor_position().unwrap();
+            let tile_pos = get_tile(cursor_pos, window); 
+            println!("({:?}", tile_pos);
+            if tile_pos.0 >= 0 && tile_pos.1 >= 0 {
+                let tile_pos = TilePos(tile_pos.0 as u32, tile_pos.1 as u32);
+                match map_query.get_tile_entity(tile_pos, 0u16, crate::game::CELL_ID) {
+                    
+                    // If the cursor is clicked on a tile, changes the tile's visibility
+                    Ok(tile_entity) => {
+                        let mut tile = tile_query.get_mut(tile_entity).unwrap();
+                        println!("valid tile");
+                        tile.visible = false;
     
                         // Update tile 
                         map_query.notify_chunk_for_tile(tile_pos, 0u16, crate::game::CELL_ID);
