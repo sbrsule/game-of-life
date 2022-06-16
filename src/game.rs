@@ -15,6 +15,8 @@ pub const GRID_ID: u16 = 0;
 pub const CELL_ID: u16 = 1;
 
 
+#[derive(Component)]
+pub struct GameCamera;
 
 pub struct GamePlugin;
 
@@ -46,7 +48,8 @@ fn startup(
     mut map_query: MapQuery,
     mut app_state: ResMut<State<AppState>>,
 ) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(GameCamera);
     app_state.push(AppState::Paused).unwrap();
 
     let texture_handle: Handle<Image> = asset_server.load("tiles.png");
