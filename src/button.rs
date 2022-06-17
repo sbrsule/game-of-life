@@ -20,6 +20,10 @@ impl Plugin for ButtonPlugin {
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(button_system)
+            )
+            .add_system_set(
+                SystemSet::on_update(AppState::Paused)
+                    .with_system(button_system)
             );
     } 
 }
@@ -74,7 +78,7 @@ fn spawn_buttons(
                 left: Val::Auto,
                 right: Val::Auto,
                 top: Val::Auto,
-                bottom: Val::Px(35.0),
+                bottom: Val::Px(15.0),
             },
             align_items: AlignItems::Center,
             ..Default::default()

@@ -1,22 +1,20 @@
-use bevy::{prelude::*};
+use bevy::{prelude::*, math::uvec2};
 use bevy_ecs_tilemap::prelude::*;
 
 use crate::AppState;
 
 const TIME_STEP: f64 = 0.5;
+pub const VERTICAL_OFFSET: f32 = 50.0;
 
 pub const MAP_SIZE: (u32, u32) = (4, 4);
-pub const CHUNK_SIZE: (u32, u32) = (12, 12);
+pub const CHUNK_SIZE: (u32, u32) = (12, 10);
 pub const TILE_SIZE: (f32, f32) = (16.0, 16.0);
 pub const TEXTURE_SIZE: (f32, f32) = (96.0, 16.0);
 pub const TRUE_MAP_SIZE: (u32, u32) = (MAP_SIZE.0 * CHUNK_SIZE.0 * TILE_SIZE.0 as u32, MAP_SIZE.1 * CHUNK_SIZE.1 * TILE_SIZE.1 as u32);
-
 pub const GRID_ID: u16 = 0;
 pub const CELL_ID: u16 = 1;
 
 
-#[derive(Component)]
-pub struct GameCamera;
 
 pub struct GamePlugin;
 
@@ -41,6 +39,12 @@ impl Plugin for GamePlugin {
 
 #[derive(Component)]
 pub struct LastUpdate(f64);
+
+#[derive(Component)]
+pub struct GameCamera;
+
+#[derive(Component)]
+pub struct GameMap;
 
 fn startup(
     asset_server: Res<AssetServer>, 
@@ -98,19 +102,22 @@ fn startup(
     commands
         .entity(map_entity)
         .insert(map)
+        .insert(GameMap)
         // This line centers the map on the screen
-        .insert(Transform::from_xyz(-((MAP_SIZE.0 * CHUNK_SIZE.0) as f32 * TILE_SIZE.0)/2.0, -((MAP_SIZE.1 * CHUNK_SIZE.1) as f32 * TILE_SIZE.1)/2.0, 0.0))
+        .insert(Transform::from_xyz(-((MAP_SIZE.0 * CHUNK_SIZE.0) as f32 * TILE_SIZE.0)/2.0, -((MAP_SIZE.1 * CHUNK_SIZE.1) as f32 * TILE_SIZE.1)/2.0 + VERTICAL_OFFSET, 0.0))
         .insert(GlobalTransform::default());
 }
 
 fn update_cells(
     mut commands: Commands,
-    tile_query: Query<(Entity, &Tile, &TilePos)>, mut map_query: MapQuery,
+    tile_query: Query<(Entity, &Tile, &TilePos)>, 
+    mut map_query: MapQuery,
     time: Res<Time>,
     mut last_update_query: Query<&mut LastUpdate>,
 ) {
     let current_time = time.seconds_since_startup();
     let mut last_update = last_update_query.single_mut();
+    let map_size = map_query.get_layer(0u16, CELL_ID).unwrap().1.get_layer_size_in_tiles();
     if current_time - last_update.0 > TIME_STEP {
         for (entity, tile, pos) in tile_query.iter() {
             let neighbor_count = map_query
@@ -165,14 +172,34 @@ fn pause_game(
         match app_state.current() {
             AppState::InGame => {
                 app_state.push(AppState::Paused).unwrap();
-                println!("PAUSED")
             }
             AppState::Paused => {
                 app_state.pop().unwrap();
-                println!("RESUMED")
             }
             _ => ()
         }
         keys.reset(KeyCode::P);
     }
 }
+
+// Gets cells neighbors including those on the other side of the map, allowing for wrapping
+/* 
+fn get_cell_neighbors(
+    pos: &TilePos, 
+    map_id: u16, 
+    layer_id: u16, 
+    map_size: MapSize,
+    mut map_query: MapQuery,
+) -> Vec<Entity> {
+    let neighbors: Vec<Entity> = vec![];
+    // INCOMPLETE, trying to account for all neighbor possibilities
+    match pos.0 {
+        0 => {
+            match pos.1 {
+                0 => neighbors.push(map_query.get_tile_entity(uvec2(map_size.0, map_size.1).into(), map_id, layer_id).unwrap()),
+                map_size.1 => neighbors.push(map_query.get_tile_entity(uvec2(map_size.0, 0).into(), map_id, layer_id).unwrap()),
+                _ => ne
+            }
+        }
+}
+*/

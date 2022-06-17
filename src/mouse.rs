@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::{MapQuery, TilePos, Tile};
 
+use crate::game;
+
 pub struct MousePlugin;
 
 impl Plugin for MousePlugin {
@@ -24,7 +26,6 @@ fn cursor_system(
         if buttons.pressed(MouseButton::Left) {
             let cursor_pos = window.cursor_position().unwrap();
             let tile_pos = get_tile(cursor_pos, window); 
-            println!("({:?}", tile_pos);
             if tile_pos.0 >= 0 && tile_pos.1 >= 0 {
                 let tile_pos = TilePos(tile_pos.0 as u32, tile_pos.1 as u32);
                 match map_query.get_tile_entity(tile_pos, 0u16, crate::game::CELL_ID) {
@@ -32,7 +33,6 @@ fn cursor_system(
                     // If the cursor is clicked on a tile, changes the tile's visibility
                     Ok(tile_entity) => {
                         let mut tile = tile_query.get_mut(tile_entity).unwrap();
-                        println!("valid tile");
                         tile.visible = true;
     
                         // Update tile 
@@ -77,7 +77,7 @@ fn get_tile(
 
 
     // Gets the maps origin point's coordinates relative to the window
-    let map_pos = (((window_width as u32) - crate::game::TRUE_MAP_SIZE.0) / 2, ((window_height as u32) - crate::game::TRUE_MAP_SIZE.1) / 2);
+    let map_pos = ((window_width as u32 - crate::game::TRUE_MAP_SIZE.0) / 2, ((window_height as u32 - crate::game::TRUE_MAP_SIZE.1) / 2 + game::VERTICAL_OFFSET as u32));
 
     // Converts the cursors position from the windows coordinates into the map coordinates
     let tile_x = ((cursor_pos[0] - map_pos.0 as f32) / crate::game::TILE_SIZE.0) as i32;

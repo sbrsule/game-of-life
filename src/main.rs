@@ -4,12 +4,13 @@ mod mouse;
 mod button;
 mod texture_helper;
 
-use bevy::{prelude::*, diagnostic::{LogDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}};
+use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use texture_helper::set_texture_filters_to_nearest;
 
-const WINDOW_WIDTH: f32 = ((game::MAP_SIZE.0 * game::CHUNK_SIZE.0) as f32 * game::TILE_SIZE.0) + (game::TILE_SIZE.0 * 2f32); 
-const WINDOW_HEIGHT: f32 = ((game::MAP_SIZE.1 * game::CHUNK_SIZE.1) as f32 * game::TILE_SIZE.1) + (game::TILE_SIZE.1 * 2f32); 
+const WINDOW_PADDING: (f32, f32) = (200.0, 100.0);
+const WINDOW_WIDTH: f32 = ((game::MAP_SIZE.0 * game::CHUNK_SIZE.0) as f32 * game::TILE_SIZE.0) + (game::TILE_SIZE.0 * 2f32) + WINDOW_PADDING.0; 
+const WINDOW_HEIGHT: f32 = ((game::MAP_SIZE.1 * game::CHUNK_SIZE.1) as f32 * game::TILE_SIZE.1) + (game::TILE_SIZE.1 * 2f32) + WINDOW_PADDING.1; 
 
 const WINDOW_COLOR: Color = Color::rgb(0.0, 0.0, 0.0);
 
@@ -33,8 +34,6 @@ fn main() {
         .insert_resource(ClearColor(WINDOW_COLOR))
         .add_plugins(DefaultPlugins)
         .add_plugin(TilemapPlugin)
-        .add_plugin(LogDiagnosticsPlugin::default())
-        .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(main_menu::MainMenuPlugin)
         .add_plugin(game::GamePlugin)
         .add_plugin(mouse::MousePlugin)
